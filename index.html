@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GenScale: Relative Object Scale in Image Generation and Editing</title>
+    <meta name="description" content="GenScale is a benchmark for physically grounded relative object scale in image generation and editing, with Rescale as a model-agnostic post-processing agent for scale correction.">
+    <meta property="og:title" content="GenScale: A Benchmark for Relative Object Scale">
+    <meta property="og:description" content="900 image-level entries and 1,643 pairwise scale relations for evaluating and correcting relative object scale.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="assets/images/teaser.png">
+    <link rel="stylesheet" href="assets/css/style.css">
+  </head>
+  <body>
+    <header class="hero">
+      <nav class="nav" aria-label="Primary">
+        <a href="#abstract">Abstract</a>
+        <a href="#benchmark">Benchmark</a>
+        <a href="#method">Method</a>
+        <a href="#results">Results</a>
+        <a href="#citation">Citation</a>
+      </nav>
+
+      <div class="hero-inner">
+        <p class="venue">NeurIPS 2026</p>
+        <h1>GenScale: A Benchmark for Relative Object Scale in Image Generation and Editing</h1>
+        <p class="subtitle">
+          Evaluating whether modern image generators preserve real-world object proportions,
+          and repairing scale errors with a model-agnostic correction agent.
+        </p>
+
+        <div class="authors" aria-label="Authors">
+          <a href="https://github.com/lingxiao-li">Lingxiao Li</a>
+          <span>Max Whitton</span>
+          <span>Ledell Wu</span>
+          <span>Boqing Gong</span>
+        </div>
+        <p class="affiliations">
+          <span>Boston University</span>
+          <span>Creatify Lab</span>
+        </p>
+
+        <div class="link-row" aria-label="Project links">
+          <a class="button primary" href="assets/paper/genscale.pdf">Paper</a>
+          <a class="button" href="#" aria-disabled="true">arXiv coming soon</a>
+          <a class="button" href="https://github.com/lingxiao-li/Bifrost">Code</a>
+          <a class="button" href="https://lingxiao-li.github.io/genscale.github.io/">Website</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="wide figure-section" aria-label="Teaser">
+        <img class="teaser" src="assets/images/teaser.png" alt="Examples showing relative scale failures in image generation and correction, contrasted with Rescale outputs.">
+        <p class="caption">
+          Modern image generators can produce photorealistic outputs while violating familiar
+          real-world size relationships. GenScale evaluates this failure mode across text-only
+          generation, human-product generation, and scale correction.
+        </p>
+      </section>
+
+      <section id="abstract" class="section">
+        <h2>Abstract</h2>
+        <p>
+          Modern image generation and editing systems can produce photorealistic, prompt-aligned
+          images, but still often render familiar objects at implausible relative sizes. To measure
+          this failure mode, we introduce <strong>GenScale</strong>, a benchmark and evaluation
+          protocol for real-world relative object scale in image generation and editing.
+          GenScale contains <strong>900 image-level entries</strong> and
+          <strong>1,643 pairwise anchor-target scale relations</strong> across common-object
+          generation, human-product generation with metric dimensions, and scale correction from
+          failed generations. We further design a human-calibrated ordinal judge for scalable
+          pairwise scale evaluation. We also introduce <strong>Rescale</strong>, a model-agnostic
+          post-processing agent for localized scale correction without modifying the source
+          generator. Experiments reveal that state-of-the-art image generators and editors cannot
+          reliably observe relative scale yet, while Rescale consistently improves scale
+          plausibility across generated and edited images.
+        </p>
+      </section>
+
+      <section class="stats" aria-label="Benchmark statistics">
+        <div>
+          <strong>900</strong>
+          <span>Image-level entries</span>
+        </div>
+        <div>
+          <strong>1,643</strong>
+          <span>Pairwise scale relations</span>
+        </div>
+        <div>
+          <strong>3</strong>
+          <span>Generation and editing tasks</span>
+        </div>
+        <div>
+          <strong>5</strong>
+          <span>Scale scenarios</span>
+        </div>
+      </section>
+
+      <section id="benchmark" class="section">
+        <h2>Benchmark</h2>
+        <p>
+          GenScale represents relative scale as a pairwise anchor-target relation grounded in
+          physical-size metadata. It tests implicit common-object size priors, metric product scale
+          with human anchors, and post-generation scale correction.
+        </p>
+
+        <div class="task-grid">
+          <article class="task-card">
+            <img src="assets/images/task1_s1_common_objects.jpg" alt="Task 1 examples for natural-depth common-object generation.">
+            <div>
+              <p class="eyebrow">Task 1</p>
+              <h3>Common-Object Scale</h3>
+              <p>Text-only prompts test whether models infer plausible relative sizes for familiar objects under natural-depth and same-plane layouts.</p>
+            </div>
+          </article>
+          <article class="task-card">
+            <img src="assets/images/task2_human_product.jpg" alt="Task 2 examples for human-product scale generation.">
+            <div>
+              <p class="eyebrow">Task 2</p>
+              <h3>Human-Product Scale</h3>
+              <p>Reference-conditioned prompts specify product dimensions and human anchors, requiring metric scale realization while preserving product identity.</p>
+            </div>
+          </article>
+          <article class="task-card">
+            <img src="assets/images/task3_editor_correction.jpg" alt="Task 3 examples for scale-error correction.">
+            <div>
+              <p class="eyebrow">Task 3</p>
+              <h3>Scale Correction</h3>
+              <p>Erroneous generations become editing tasks that test either autonomous scale-error discovery or exact numeric resize following.</p>
+            </div>
+          </article>
+        </div>
+
+        <figure class="inline-figure">
+          <img src="assets/images/benchmark_pipeline.png" alt="GenScale benchmark construction pipeline.">
+          <figcaption>
+            GenScale is built from physical-size metadata and product references, then instantiated
+            as common-object generation, human-product metric scale, and scale-correction tasks.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section id="method" class="section split">
+        <div>
+          <h2>Rescale</h2>
+          <p>
+            Rescale turns the benchmark formulation into an actionable correction interface. Given
+            an image, object identities, and physical-size references, the agent diagnoses scale
+            anomalies, chooses the editable object, predicts a resize factor, and performs localized
+            correction while preserving identity, layout, lighting, and background.
+          </p>
+          <p>
+            The correction pipeline extracts the target object, completes the background, adjusts
+            masks and depth, reinserts the resized object, and verifies whether another correction
+            round is needed.
+          </p>
+        </div>
+        <figure class="inline-figure compact">
+          <img src="assets/images/inference_pipeline.png" alt="Rescale inference and localized editing pipeline.">
+          <figcaption>Agentic multi-round inference and modular localized insertion in Rescale.</figcaption>
+        </figure>
+      </section>
+
+      <section id="results" class="section">
+        <h2>Results</h2>
+        <p>
+          GenScale exposes three recurring failure modes: mean regression in common-object
+          generation, product magnification in human-product generation, and weak autonomous
+          diagnosis in scale correction. Rescale reduces scale error across all tested source
+          settings while keeping visual and identity metrics high.
+        </p>
+
+        <div class="result-grid">
+          <article>
+            <p class="metric">56.5%</p>
+            <h3>Best Task 1 plausible rate</h3>
+            <p>Even the strongest generator remains far from solved on common-object relative scale.</p>
+          </article>
+          <article>
+            <p class="metric">78.9%</p>
+            <h3>Best Task 2 plausible rate</h3>
+            <p>Metric product cues help, but human-product scale errors remain common.</p>
+          </article>
+          <article>
+            <p class="metric">+0.710</p>
+            <h3>Rescale Task 3 gain</h3>
+            <p>Structured scale diagnosis and localized editing outperform general-purpose editors.</p>
+          </article>
+        </div>
+
+        <figure class="inline-figure">
+          <img src="assets/images/size_depth_relation.png" alt="Depth-mediated scale compression analysis in Task 1.">
+          <figcaption>
+            In natural-depth scenes, generators often place smaller objects closer and larger objects
+            farther away, hiding unrealistic relative size ratios through layout.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section id="citation" class="section">
+        <div class="citation-header">
+          <h2>Citation</h2>
+          <button class="copy-button" type="button" data-copy-target="bibtex">Copy</button>
+        </div>
+        <pre id="bibtex"><code>@inproceedings{li2026genscale,
+  title = {GenScale: A Benchmark for Relative Object Scale in Image Generation and Editing},
+  author = {Li, Lingxiao and Whitton, Max and Wu, Ledell and Gong, Boqing},
+  booktitle = {Advances in Neural Information Processing Systems},
+  year = {2026}
+}</code></pre>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        This project page follows the clean single-page style popularized by the Nerfies and
+        Academic Project Page templates.
+      </p>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>
