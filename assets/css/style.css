@@ -159,7 +159,7 @@ h3 {
 
 .section p {
   max-width: 900px;
-  margin: 0 auto 18px;
+  margin: 0 auto 20px;
 }
 
 figure {
@@ -189,46 +189,56 @@ figcaption {
 
 .table-wrap {
   overflow-x: auto;
-  margin: 26px 0 34px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  max-width: 100%;
+  margin: 36px auto 52px;
+  padding: 0 0 6px;
 }
 
 table {
-  width: 100%;
+  width: auto;
   min-width: 760px;
+  max-width: 100%;
+  margin: 0 auto;
   border-collapse: collapse;
   background: #fff;
   font-size: 14px;
   line-height: 1.35;
+  border-top: 2px solid #111827;
+  border-bottom: 2px solid #111827;
 }
 
 caption {
   caption-side: top;
-  padding: 12px 14px;
+  max-width: 900px;
+  margin: 0 auto 10px;
+  padding: 0;
   color: #111827;
-  background: var(--light);
-  font-weight: 750;
+  background: transparent;
+  font-weight: 650;
+  line-height: 1.45;
   text-align: left;
 }
 
 th,
 td {
-  padding: 9px 10px;
-  border-top: 1px solid var(--border);
-  border-right: 1px solid var(--border);
+  padding: 8px 11px;
+  border-top: 1px solid #d7dce3;
+  border-right: 0;
   text-align: center;
   vertical-align: middle;
 }
 
-th:last-child,
-td:last-child {
-  border-right: 0;
+thead th {
+  background: transparent;
+  font-weight: 760;
 }
 
-thead th {
-  background: #f8fafc;
-  font-weight: 760;
+thead tr:first-child th {
+  border-top: 0;
+}
+
+thead tr:last-child th {
+  border-bottom: 1.5px solid #111827;
 }
 
 tbody td:first-child,
@@ -238,7 +248,8 @@ tbody td:nth-child(2) {
 
 .total td {
   font-weight: 760;
-  background: #f8fafc;
+  background: transparent;
+  border-top: 1.5px solid #111827;
 }
 
 .bib-header {
@@ -309,6 +320,20 @@ footer p {
 
   .button {
     width: 100%;
+  }
+
+  .table-wrap {
+    margin: 30px auto 44px;
+  }
+
+  table {
+    min-width: 720px;
+    font-size: 13px;
+  }
+
+  caption {
+    min-width: 720px;
+    padding-right: 18px;
   }
 }
 
